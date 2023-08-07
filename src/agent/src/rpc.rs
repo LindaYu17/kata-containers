@@ -2175,6 +2175,8 @@ mod tests {
         let agent_service = Box::new(AgentService {
             sandbox: Arc::new(Mutex::new(sandbox)),
             init_mode: true,
+            #[cfg(feature = "sealed-secret")]
+            cdh_client: None,
         });
 
         let req = protocols::agent::UpdateInterfaceRequest::default();
@@ -2192,6 +2194,8 @@ mod tests {
         let agent_service = Box::new(AgentService {
             sandbox: Arc::new(Mutex::new(sandbox)),
             init_mode: true,
+            #[cfg(feature = "sealed-secret")]
+            cdh_client: None,
         });
 
         let req = protocols::agent::UpdateRoutesRequest::default();
@@ -2209,6 +2213,8 @@ mod tests {
         let agent_service = Box::new(AgentService {
             sandbox: Arc::new(Mutex::new(sandbox)),
             init_mode: true,
+            #[cfg(feature = "sealed-secret")]
+            cdh_client: None,
         });
 
         let req = protocols::agent::AddARPNeighborsRequest::default();
@@ -2347,6 +2353,8 @@ mod tests {
             let agent_service = Box::new(AgentService {
                 sandbox: Arc::new(Mutex::new(sandbox)),
                 init_mode: true,
+                #[cfg(feature = "sealed-secret")]
+                cdh_client: None,
             });
 
             let result = agent_service
@@ -2836,6 +2844,8 @@ OtherField:other
         let agent_service = Box::new(AgentService {
             sandbox: Arc::new(Mutex::new(sandbox)),
             init_mode: true,
+            #[cfg(feature = "sealed-secret")]
+            cdh_client: None,
         });
 
         let ctx = mk_ttrpc_context();
