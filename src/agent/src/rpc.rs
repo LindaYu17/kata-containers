@@ -4,6 +4,7 @@
 //
 
 use async_trait::async_trait;
+use derivative::Derivative;
 use rustjail::{pipestream::PipeStream, process::StreamType};
 use tokio::io::{AsyncReadExt, AsyncWriteExt, ReadHalf};
 use tokio::sync::Mutex;
@@ -95,6 +96,8 @@ use std::os::unix::fs::FileExt;
 use std::path::PathBuf;
 
 use kata_types::k8s;
+#[cfg(feature = "sealed-secret")]
+use crate::cdh::CDHClient;
 
 pub const CONTAINER_BASE: &str = "/run/kata-containers";
 const MODPROBE_PATH: &str = "/sbin/modprobe";
@@ -167,10 +170,14 @@ impl<T> OptionToTtrpcResult<T> for Option<T> {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Derivative)]
+#[derivative(Clone, Debug)]
 pub struct AgentService {
     sandbox: Arc<Mutex<Sandbox>>,
     init_mode: bool,
+    #[derivative(Debug="ignore")]
+    #[cfg(feature = "sealed-secret")]
+    cdh_client: Option<CDHClient>,
 }
 
 impl AgentService {
@@ -213,6 +220,25 @@ impl AgentService {
         // match real devices inside the VM. This step is necessary since we
         // cannot predict everything from the caller.
         add_devices(&req.devices, &mut oci, &self.sandbox).await?;
+
+        if cfg!(feature = "sealed-secret") {
+            let process = oci
+                .process
+                .as_mut()
+                .ok_or_else(|| anyhow!("Spec didn't contain process field"))?;
+
+            for env in process.env.iter_mut() {
+                let client = self
+                    .cdh_client
+                    .as_ref()
+                    .ok_or(anyhow!("get cdh_client failed"))?;
+                let unsealed_env = client
+                    .unseal_env(env)
+                    .await
+                    .map_err(|e| anyhow!("unseal env failed: {:?}", e))?;
+                *env = unsealed_env.to_string();
+            }
+        }
 
         // Both rootfs and volumes (invoked with --volume for instance) will
         // be processed the same way. The idea is to always mount any provided
@@ -1604,6 +1630,8 @@ pub async fn start(
     let agent_service = Box::new(AgentService {
         sandbox: s,
         init_mode,
+        #[cfg(feature = "sealed-secret")]
+        cdh_client: Some(CDHClient::new()?),
     }) as Box<dyn agent_ttrpc::AgentService + Send + Sync>;
     let aservice = agent_ttrpc::create_agent_service(Arc::new(agent_service));
 
@@ -2161,7 +2189,6 @@ mod tests {
     async fn test_update_routes() {
         let logger = slog::Logger::root(slog::Discard, o!());
         let sandbox = Sandbox::new(&logger).unwrap();
-
         let agent_service = Box::new(AgentService {
             sandbox: Arc::new(Mutex::new(sandbox)),
             init_mode: true,
@@ -2179,7 +2206,6 @@ mod tests {
     async fn test_add_arp_neighbors() {
         let logger = slog::Logger::root(slog::Discard, o!());
         let sandbox = Sandbox::new(&logger).unwrap();
-
         let agent_service = Box::new(AgentService {
             sandbox: Arc::new(Mutex::new(sandbox)),
             init_mode: true,
