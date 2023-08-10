@@ -169,7 +169,8 @@ type SandboxConfig struct {
 
 	// StaticResourceMgmt indicates if the shim should rely on statically sizing the sandbox (VM)
 	StaticResourceMgmt bool
-
+	// enable sealed secret feature
+	SealedSecretEnabled bool
 	// SharePidNs sets all containers to share the same sandbox level pid namespace.
 	SharePidNs bool
 	// SystemdCgroup enables systemd cgroup support

@@ -252,7 +252,6 @@ get_latest_pause_image_artefact_and_builder_image_version() {
 	local pause_image_version=$(get_from_kata_deps "externals.pause.version")
 	local latest_pause_image_artefact="${pause_image_repo}-${pause_image_version}"
 	local latest_pause_image_builder_image="$(get_pause_image_name)"
-
 	echo "${latest_pause_image_artefact}-${latest_pause_image_builder_image}"
 }
 
@@ -730,7 +729,9 @@ install_shimv2() {
 	export GO_VERSION
 	export RUST_VERSION
 
-	DESTDIR="${destdir}" PREFIX="${prefix}" "${shimv2_builder}"
+	extra_opts+=" DEFSEALEDSECRETENABLED=true"
+    info "extra_opts: ${extra_opts}"
+	DESTDIR="${destdir}" PREFIX="${prefix}" EXTRA_OPTS="${extra_opts}" "${shimv2_builder}"
 }
 
 install_ovmf() {

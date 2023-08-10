@@ -348,3 +348,8 @@ sandbox_bind_mounts=@DEFBINDMOUNTS@
 # to the hypervisor.
 # (default: /run/kata-containers/dans)
 dan_conf = "@DEFDANCONF@"
+
+# Sealed secret feature configuration.
+# If true, sealed secret feature will be enabled.
+# (default: false)
+sealed_secret_enabled = @DEFSEALEDSECRETENABLED@
