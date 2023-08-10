@@ -28,6 +28,8 @@ LIBC=${LIBC:-musl}
 # The kata agent enables seccomp feature.
 # However, it is not enforced by default: you need to enable that in the main configuration file.
 SECCOMP=${SECCOMP:-"yes"}
+# The kata agent enables sealed-secret feature.
+SEALED_SECRET=${SEALED_SECRET:-"no"}
 SELINUX=${SELINUX:-"no"}
 AGENT_POLICY=${AGENT_POLICY:-no}
 AGENT_SOURCE_BIN=${AGENT_SOURCE_BIN:-""}
@@ -190,6 +192,10 @@ ROOTFS_DIR          Path to the directory that is populated with the rootfs.
 
 SECCOMP             When set to "no", the kata-agent is built without seccomp capability.
                     Default value: "yes"
+
+SEALED_SECRET       When set to "yes", the kata-agent is built with sealed-secret
+                    capability.
+                    Default value: "no"
 
 SELINUX             When set to "yes", build the rootfs with the required packages to
                     enable SELinux in the VM.
@@ -510,6 +516,7 @@ build_rootfs_distro()
 			--env OS_VERSION="${OS_VERSION}" \
 			--env INSIDE_CONTAINER=1 \
 			--env SECCOMP="${SECCOMP}" \
+			--env SEALED_SECRET="${SEALED_SECRET}" \
 			--env SELINUX="${SELINUX}" \
 			--env DEBUG="${DEBUG}" \
 			--env CROSS_BUILD="${CROSS_BUILD}" \

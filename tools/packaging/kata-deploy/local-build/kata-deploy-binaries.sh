@@ -399,6 +399,7 @@ install_initrd_confidential() {
 	export AGENT_POLICY=yes
 	export MEASURED_ROOTFS=yes
 	export PULL_TYPE=default
+    export SEALED_SECRET=yes
 	install_initrd "confidential"
 }
 

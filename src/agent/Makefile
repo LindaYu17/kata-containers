@@ -41,6 +41,13 @@ ifeq ($(AGENT_POLICY),yes)
     override EXTRA_RUSTFEATURES += agent-policy
 endif
 
+SEALED_SECRET ?= no
+
+# Enable sealed-secret feature of rust build
+ifeq ($(SEALED_SECRET),yes)
+    override EXTRA_RUSTFEATURES += sealed-secret
+endif
+
 ##VAR PULL_TYPE=default|guest-pull define if agent enables the guest pull image feature
 PULL_TYPE ?= default
 ifeq ($(PULL_TYPE),default)
