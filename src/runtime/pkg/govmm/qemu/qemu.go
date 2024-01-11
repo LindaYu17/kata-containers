@@ -275,6 +275,10 @@ type Object struct {
 	// DeviceID is the user defined device ID.
 	DeviceID string
 
+    MrconfigID string
+    Mrowner string
+    Mrownerconfig string
+
 	// MemPath is the object's memory path.
 	// This is only relevant for memory objects
 	MemPath string
@@ -387,12 +391,30 @@ func (object Object) QemuParams(config *Config) []string {
 		if object.Debug {
 			objectParams = append(objectParams, "debug=on")
 		}
+        if object.MrconfigID != "" {
+            objectParams = append(objectParams, fmt.Sprintf("mrconfigid=%s", object.MrconfigID))
+        }
+        if object.Mrowner!= "" {
+            objectParams = append(objectParams, fmt.Sprintf("mrowner=%s", object.Mrowner))
+        }
+        if object.Mrownerconfig != "" {
+            objectParams = append(objectParams, fmt.Sprintf("mrownerconfig=%s", object.Mrownerconfig))
+        }
 		deviceParams = append(deviceParams, string(object.Driver))
 		deviceParams = append(deviceParams, fmt.Sprintf("id=%s", object.DeviceID))
 		deviceParams = append(deviceParams, fmt.Sprintf("file=%s", object.File))
 		if object.FirmwareVolume != "" {
 			deviceParams = append(deviceParams, fmt.Sprintf("config-firmware-volume=%s", object.FirmwareVolume))
 		}
+/*        if object.MrconfigID != "" {
+            deviceParams = append(deviceParams, fmt.Sprintf("mrconfigid=%s", object.MrconfigID))
+        }
+        if object.Mrowner!= "" {
+            deviceParams = append(deviceParams, fmt.Sprintf("mrowner=%s", object.Mrowner))
+        }
+        if object.Mrownerconfig != "" {
+            deviceParams = append(deviceParams, fmt.Sprintf("mrownderconfig=%s", object.Mrownerconfig))
+        }*/
 	case SEVGuest:
 		objectParams = append(objectParams, string(object.Type))
 		objectParams = append(objectParams, fmt.Sprintf("id=%s", object.ID))
