@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: runtime-set-policy
+spec:
+  runtimeClassName: kata-qemu
+  terminationGracePeriodSeconds: 0
+  shareProcessNamespace: true
+  containers:
+  - name: runtime-set-policy
+    image:  quay.io/quay/busybox
+    imagePullPolicy: Always
+    command: ["/bin/sh","-c","while true; do date; sleep 1; done"]

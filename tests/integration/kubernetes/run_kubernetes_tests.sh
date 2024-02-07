@@ -152,6 +152,10 @@ run_policy_specific_tests() {
 	info "$(kubectl get pods --all-namespaces 2>&1)"
 	info "Executing k8s-policy-set-keys.bats"
 	bats --show-output-of-passing-tests k8s-policy-set-keys.bats
+
+	info "$(kubectl get pods --all-namespaces 2>&1)"
+	info "Executing k8s-runtime-set-policy.bats"
+	bats --show-output-of-passing-tests k8s-runtime-set-policy.bats
 }
 
 # we may need to skip a few test cases when running on non-x86_64 arch
